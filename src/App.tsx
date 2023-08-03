@@ -1,12 +1,21 @@
 import React from "react";
 import "./App.css";
 import Header from "./components/Header";
+import Home from "./components/Home";
+import Signup from "./components/Signup";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
-    <div className="app">
+    <main className="app">
       <Header />
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </BrowserRouter>
+    </main>
   );
 }
 
