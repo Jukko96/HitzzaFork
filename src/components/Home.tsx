@@ -1,10 +1,23 @@
 import React, { useState } from "react";
-import Signup from "./Signup";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Home = () => {
-  const [id, setId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleSigninClick = () => {
+    axios
+      .post(
+        "https://www.pre-onboarding-selection-task.shop/auth/signin",
+        { email, password },
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then(({ data }) =>
+        localStorage.setItem("access_token", data.access_token)
+      )
+      .catch((e) => console.log(e));
+  };
 
   return (
     <div className="home">
@@ -12,7 +25,7 @@ const Home = () => {
       <div className="signin-container">
         <input
           className="signin-input"
-          onChange={(e) => setId(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="아이디"
         />
         <input
@@ -21,7 +34,12 @@ const Home = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="signin-button-conatainer">
-          <input className="submit-button" type="button" value={"로그인"} />
+          <input
+            className="submit-button"
+            type="button"
+            value={"로그인"}
+            onClick={handleSigninClick}
+          />
           <Link to={"/signup"}>
             <div className="submit-button">회원가입</div>
           </Link>
