@@ -6,10 +6,26 @@ const Todos = () => {
   const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [todo, setTodo] = useState("");
+  const token = localStorage.getItem("access_token");
 
+  interface todoList {
+    id: Number;
+    isCompleted: boolean;
+    todo: String;
+    userId: Number;
+  }
+  const getTodoList = () => {
+    axios
+      .get("https://www.pre-onboarding-selection-task.shop/todos", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(({ data }) => {
+        console.log("getTodo", data);
+        setTodos(data);
+      })
+      .catch((err) => console.error(err));
+  };
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-
     console.log(`Access token: ${token}`);
     if (token) {
       console.log("true");
@@ -17,23 +33,13 @@ const Todos = () => {
       console.log("false");
       navigate("/");
     }
-
-    axios
-      .get("https://www.pre-onboarding-selection-task.shop/todos", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(({ data }) => {
-        setTodos(data);
-      })
-      .catch((err) => console.error(err));
+    getTodoList();
   }, []);
 
   const handleTodoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodo(e.target.value);
   };
   const handleTodoAdd = () => {
-    const token = localStorage.getItem("access_token");
-
     axios
       .post(
         "https://www.pre-onboarding-selection-task.shop/todos",
@@ -45,11 +51,10 @@ const Todos = () => {
           },
         }
       )
-      .then((response) => console.log(response))
+      .then(() => getTodoList())
       .catch((err) => console.log(err));
   };
-  //   useEffect(() => {}, [handleTodoAdd]);
-  console.log(todos);
+
   return (
     <div>
       Todos
@@ -58,17 +63,9 @@ const Todos = () => {
       <ul>
         {todos.length <= 0
           ? "null"
-          : todos.map(
-              (
-                item: {
-                  id: Number;
-                  isCompleted: boolean;
-                  todo: String;
-                  userId: Number;
-                },
-                index
-              ) => <li key={index}>{item.todo}</li>
-            )}
+          : todos.map((item: todoList, index) => (
+              <li key={index}>{item.todo}</li>
+            ))}
       </ul>
     </div>
   );
