@@ -1,11 +1,21 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    console.log(`Access token: ${token}`);
+    if (token) {
+      console.log("true");
+      navigate("/todos");
+    } else {
+      console.log("false");
+    }
+  }, []);
   const handleSigninClick = () => {
     axios
       .post(
@@ -13,9 +23,11 @@ const Home = () => {
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       )
-      .then(({ data }) =>
-        localStorage.setItem("access_token", data.access_token)
-      )
+      .then(({ data }) => {
+        console.log("login Success");
+        localStorage.setItem("access_token", data.access_token);
+        navigate("/todos");
+      })
       .catch((e) => console.log(e));
   };
 
